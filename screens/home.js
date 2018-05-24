@@ -16,6 +16,9 @@ import {
 import { Icon } from 'react-native-elements'
 import MapView from 'react-native-maps';
 
+import  dataLocation  from '../assets/location.json';
+
+
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
@@ -66,6 +69,7 @@ class HomeScreen extends React.Component {
   // Fin navigationOptions
 
   componentDidMount(){
+
     this.props.navigation.setParams({
       AddaTagg : this.AddaTagg
     })
@@ -105,7 +109,23 @@ class HomeScreen extends React.Component {
           )
     };
     // Fin des methodes de la Class Home
+    // console.log(dataLocation.data[0].longitude)
+
     LoadingMapp(){
+
+      const list = dataLocation.data.map(marker => {
+        return (
+          <MapView.Marker
+                 coordinate={{
+                   latitude: marker.latittude,
+                   longitude: marker.longitude
+                 }}
+                 pinColor= '#3366ff'
+                 title={marker.tags[0].msg}/>
+               )
+      })
+
+
         return (
           <MapView
                   style={styles.mapStyle}
@@ -114,31 +134,7 @@ class HomeScreen extends React.Component {
                   loadingEnabled
                   followUserLocation
                   >
-
-                   <MapView.Marker
-                          coordinate={{
-                            latitude: 48.789803,
-                            longitude: 2.363472
-                          }}
-                          pinColor= '#3366ff'
-                          title="Allllerr XD"
-                          description="Sa marche ma gueule"/>
-                  <MapView.Marker
-                         coordinate={{
-                           latitude: 48.79187899999999,
-                           longitude: 2.3636710000000676
-                         }}
-                         pinColor= '#3366ff'
-                         title="Mairie "
-                         description="tu veux tes papiers ? :) '"/>
-                 <MapView.Marker
-                        coordinate={{
-                          latitude: 48.7886546,
-                          longitude: 2.3666407000000618
-                        }}
-                        pinColor= '#3366ff'
-                        title="Terminus"
-                        description=" Un ptit grec , sans salade ni tomate , ni oignon , juste le pain"/>
+                  {list}
 
             </ MapView>
         )
@@ -148,7 +144,7 @@ class HomeScreen extends React.Component {
     render() {
       return (
         <View style={styles.container}>
-         <Text>Shake your ASS </Text>
+         <Text> </Text>
          <Text>Latitude: {this.state.initialRegion.latitude}</Text>
           <Text>Longitude: {this.state.initialRegion.longitude}</Text>
           {this.state.locationloaded && this.LoadingMapp()}

@@ -10,12 +10,13 @@ import  SigninScreen  from './screens/signin';
 
 const RootStack = StackNavigator(
     {
+      signin: {
+          screen: SigninScreen,
+      },
       home: {
            screen: HomeScreen,
        },
-        signin: {
-            screen: SigninScreen,
-        },
+
 
     },
 );
