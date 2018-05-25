@@ -14,28 +14,19 @@ import {
 
 } from 'react-native';
 import { Icon } from 'react-native-elements'
-import MapView from 'react-native-maps';
 
-import  dataLocation  from '../assets/location.json';
-
-
-const screenWidth = Dimensions.get('window').width;
-const screenHeight = Dimensions.get('window').height;
-
+import  HomeScreen  from '../screens/home';
 import  SigninScreen  from '../screens/signin';
-import  CardScreen  from '../screens/card';
+
 
 // 37,785834
 // -122,406417
 
-class HomeScreen extends React.Component {
+class CardScreen extends React.Component {
 
   state = {
-    locationloaded : false ,
-    initialRegion : {
-    }
-
    };
+
   //  37.785834
   //  0.5 * (screenWidth / screenHeight)
   // Debut navigationOptions
@@ -49,7 +40,6 @@ class HomeScreen extends React.Component {
       headerStyle: {
         backgroundColor: '#5C63D8'
       },
-
 
       headerTitleStyle: {
         color: '#fff'
@@ -78,21 +68,6 @@ class HomeScreen extends React.Component {
       AddaTagg : this.AddaTagg
     })
 
-    navigator.geolocation.getCurrentPosition(
-          (position) => {
-            console.log(position);
-            var initialRegion = {
-              latitude: parseFloat(position.coords.latitude),
-              longitude:parseFloat(position.coords.longitude),
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            }
-            this.setState({initialRegion, locationloaded : true});
-          },
-          (error) => this.setState({ error: error.message }),
-          { enableHighAccuracy: false, timeout: 200000, maximumAge: 1000 },
-        );
-
   }
 
 
@@ -107,50 +82,20 @@ class HomeScreen extends React.Component {
 
                   {text: 'OK',  onPress: () => {
                     console.log("Ouverture du Modal")
-                    this.props.navigation.navigate("card" )
                   }},
               ],
               { cancelable: false }
           )
     };
     // Fin des methodes de la Class Home
-    // console.log(dataLocation.data[0].longitude)
-
-    LoadingMapp(){
-      const list = dataLocation.data.map(marker => {
-        return (
-          <MapView.Marker
-                 coordinate={{
-                   latitude: marker.latittude,
-                   longitude: marker.longitude
-                 }}
-                 pinColor= '#3366ff'
-                 title={marker.tags[0].msg}/>
-               )
-      })
-
-
-        return (
-          <MapView
-                  style={styles.mapStyle}
-                  initialRegion={this.state.initialRegion}
-                  showsUserLocation = "true"
-                  loadingEnabled
-                  followUserLocation
-                  >
-                  {list}
-            </ MapView>
-        )
-    }
 
 
     render() {
       return (
         <View style={styles.container}>
          <Text> </Text>
-         <Text>Latitude: {this.state.initialRegion.latitude}</Text>
-          <Text>Longitude: {this.state.initialRegion.longitude}</Text>
-          {this.state.locationloaded && this.LoadingMapp()}
+         <Text>Ldedededed</Text>
+          <Text>dededede: </Text>
 
         </View>
       );
@@ -158,7 +103,7 @@ class HomeScreen extends React.Component {
 
   }
 
-  export default HomeScreen
+  export default CardScreen
   const styles = StyleSheet.create({
     container: {
       flex: 1,

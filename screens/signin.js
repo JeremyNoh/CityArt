@@ -23,9 +23,12 @@ const screenHeight = Dimensions.get('window').height;
 // 37,785834
 // -122,406417
 
+
+
 class SigninScreen extends React.Component {
 state = {
   login :'',
+  signUpActive : false
 }
 
   //  37.785834
@@ -41,7 +44,6 @@ state = {
       headerTitleStyle: {
         color: '#fff'
       },
-
     }
   }
   // Fin navigationOptions
@@ -49,13 +51,18 @@ state = {
   componentDidMount(){
 
     this.props.navigation.setParams({
-      login : this.login
+      login : this.login,
+      SignUp : this.SignUp
+
     })
   }
 
   login = () => {
-    console.log("go to Home")
     this.props.navigation.navigate("home" )
+  }
+
+  SignUp = () => {
+    this.props.navigation.navigate("signup" )
   }
 
 
@@ -72,6 +79,7 @@ state = {
                 style={styles.TextInputCSS}
                 /*value={this.state.login}*/
                 placeholder="Password"
+                type ='password'
               />
 
         <Button
@@ -89,11 +97,29 @@ state = {
           onPress={this.login}
 
         />
+
+        <Button
+          title="SignUp"
+          titleStyle={{ fontWeight: "700" }}
+          buttonStyle={{
+            backgroundColor: "#adb1eb",
+            width: 300,
+            marginTop : 10,
+            height: 45,
+            borderWidth: 0,
+            borderRadius: 5,
+          }}
+          containerStyle={{ marginTop: 20 }}
+          onPress={this.SignUp}
+
+        />
         </View>
         )
     }
 
   }
+
+
 
   export default SigninScreen
 
@@ -130,9 +156,5 @@ state = {
       height : 40,
       marginVertical : 10 ,
       opacity : 1,
-    },
-    test: {
-
-
     },
   });
