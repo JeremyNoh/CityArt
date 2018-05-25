@@ -58,6 +58,7 @@ state = {
   }
 
   login = () => {
+    
     this.props.navigation.navigate("home" )
   }
 

@@ -28,7 +28,7 @@ const screenHeight = Dimensions.get('window').height;
 class SignupScreen extends React.Component {
 state = {
   username: null,
-  email: null,
+  email: '',
   password : null,
   confirmPassword: null,
 
@@ -89,8 +89,20 @@ state = {
     }
   }
 
+  emailTest = () => {
+     mailformat = /^(([^<>()\[\]\\.,;:\s@“]+(\.[^<>()\[\]\\.,;:\s@“]+)*)|(“.+“))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    if(!(this.state.email.match(mailformat)) ){
+      this.setState({emailError : false})
+      Alert.alert(
+              'Email invalide',
+               "l'adresse Email est invalide",
+          )
+    }
+  }
+
   SignUp = () => {
     // this.props.navigation.navigate("home" )
+    this.emailTest()
     if ((this.state.username  == null || this.state.username  == '' ) || (this.state.email == null || this.state.email  == '') || (this.state.password == null || this.state.password  == '') || ( this.state.confirmPassword == null || this.state.confirmPassword  == '') ) {
       Alert.alert(
               'formulaire Incomplet',
@@ -123,7 +135,7 @@ state = {
       }
 
       console.log("DO a POST");
-      fetch('/add-user', {
+      fetch('https://cityart.herokuapp.com/api/auth/register', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -131,10 +143,24 @@ state = {
         // 'Authorization' : `Bearer ${token}`,
       },
       body: JSON.stringify({
-        user
-      }),
-    });
-    this.props.navigation.navigate("home" )
+        username : this.state.username ,
+        email : this.state.email ,
+        password : this.state.password,
+        password_confirm : this.state.confirmPassword
+      })
+    })
+    .catch(error => {
+        console.error("c'est une erreur !!!",error)
+    })
+    .then(res =>
+      // console.log("good ",res.json())
+      Alert.alert(
+              'Vous etes Bien Enregistrer  ',
+              'Vous pouvez vous connecter',
+          )
+    )
+
+    // this.props.navigation.navigate("home" )
   }
 
     render() {

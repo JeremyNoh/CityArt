@@ -12,12 +12,13 @@ import  CardScreen  from './screens/card';
 
 const RootStack = StackNavigator(
     {
-      signup: {
-          screen: SignupScreen,
-      },
       signin: {
           screen: SigninScreen,
       },
+      signup: {
+          screen: SignupScreen,
+      },
+
 
       card: {
           screen: CardScreen,
