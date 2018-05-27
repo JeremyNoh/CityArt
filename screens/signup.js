@@ -121,18 +121,12 @@ state = {
               'Veuillez saisir a nouveau votre mot de Passe',
           )
           this.setState({confirmPassword : ""})
-          console
           this.testChampsRempli()
 
     }
   }
 
   AddUser = () => {
-      const user = {
-        username : this.state.username ,
-        email : this.state.email ,
-        password : this.state.password
-      }
 
       console.log("DO a POST");
       fetch('https://cityart.herokuapp.com/api/auth/register', {

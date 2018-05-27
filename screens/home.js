@@ -11,14 +11,13 @@ import {
   ScrollView,
   WebView,
   TextInput,
-
 } from 'react-native';
-import { Icon } from 'react-native-elements'
+import { Icon , Button } from 'react-native-elements'
 import MapView from 'react-native-maps';
 
+import PopupDialog , { DialogTitle } from 'react-native-popup-dialog';
+
 import  dataLocation  from '../assets/location.json';
-
-
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
@@ -33,7 +32,8 @@ class HomeScreen extends React.Component {
   state = {
     locationloaded : false ,
     initialRegion : {
-    }
+    },
+    user_id : 1,
 
    };
   //  37.785834
@@ -98,7 +98,6 @@ class HomeScreen extends React.Component {
 
     // Debut des methodes de la Class Home
     AddaTagg  = ()  => {
-      console.log("dede")
       Alert.alert(
               'Ajouter un Tagg',
               'Etes vous sur de vouloir Ajouter un tag',
@@ -106,24 +105,57 @@ class HomeScreen extends React.Component {
                 {text: 'Cancel',  valuer : true },
 
                   {text: 'OK',  onPress: () => {
-                    console.log("Ouverture du Modal")
-                    this.props.navigation.navigate("card" )
+                    console.log("ajout d'un Tagg")
+                    this.popupDialog.show()
                   }},
               ],
               { cancelable: false }
           )
     };
-    // Fin des methodes de la Class Home
-    // console.log(dataLocation.data[0].longitude)
+
+    AddTaggPOST  = ()  => {
+      console.log("DO a POST");
+      fetch('https://cityart.herokuapp.com/api/tags/add_tag', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        // 'Authorization' : `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        message : this.state.message ,
+        longitude : this.state.initialRegion.longitude ,
+        latitude : this.state.initialRegion.latitude,
+        user_id : this.state.user_id
+      })
+      })
+      .catch(error => {
+        console.error("c'est une erreur !!!",error)
+      })
+      .then(res =>
+      // console.log("good ",res.json())
+      Alert.alert(
+              'Tagg Ajouter ',
+              'Parfait !! le tagg est ajouter',
+          )
+      )
+
+      this.popupDialog.dismiss();
+      this.setState({message : ''})
+    };
+
+
+
 
     LoadingMapp(){
-      const list = dataLocation.data.map(marker => {
+      const list = dataLocation.data.map((marker , index )=> {
         return (
           <MapView.Marker
                  coordinate={{
                    latitude: marker.latittude,
                    longitude: marker.longitude
                  }}
+                 key = {index}
                  pinColor= '#3366ff'
                  title={marker.tags[0].msg}/>
                )
@@ -134,7 +166,7 @@ class HomeScreen extends React.Component {
           <MapView
                   style={styles.mapStyle}
                   initialRegion={this.state.initialRegion}
-                  showsUserLocation = "true"
+                  showsUserLocation
                   loadingEnabled
                   followUserLocation
                   >
@@ -144,12 +176,33 @@ class HomeScreen extends React.Component {
     }
 
 
+
     render() {
       return (
         <View style={styles.container}>
-         <Text> </Text>
-         <Text>Latitude: {this.state.initialRegion.latitude}</Text>
-          <Text>Longitude: {this.state.initialRegion.longitude}</Text>
+        <Text>Latitude: {this.state.initialRegion.latitude}</Text>
+         <Text>Longitude: {this.state.initialRegion.longitude}</Text>
+        <PopupDialog
+         dialogTitle={<DialogTitle title="Ajoute ton Tagg" />}
+          ref={(popupDialog) => { this.popupDialog = popupDialog; }}
+        >
+          <View style={styles.container}>
+          <TextInput
+                  style={ styles.TextInputCSS }
+                  onChangeText={(message) => this.setState({message})}
+                  value={this.state.message}
+                  multiline = {true}
+                  numberOfLines = {4}
+                  placeholder="Fais Preuve d'imagination  "
+                />
+                <Button
+                  title="Ajouter "
+                  buttonStyle={styles.addTaggCSS}
+                  containerStyle={{ marginTop: 20 }}
+                  onPress={() => this.AddTaggPOST()}
+                />
+          </View>
+        </PopupDialog>
           {this.state.locationloaded && this.LoadingMapp()}
 
         </View>
@@ -169,8 +222,28 @@ class HomeScreen extends React.Component {
     mapStyle: {
       left: 0,
       right: 0,
-      top:50,
+      top:0,
       bottom:0,
       position:'absolute',
-    }
+    },
+    addTaggCSS: {
+      backgroundColor: "#5C63D8",
+      width: 300,
+      marginTop : 30,
+      height: 45,
+      borderWidth: 0,
+      borderRadius: 5,
+    },
+    TextInputCSS: {
+      alignSelf : "stretch",
+      backgroundColor: "#f2f2f2",
+      height : 40,
+      marginVertical : 10 ,
+      marginHorizontal : 10 ,
+      borderRadius: 4,
+      borderWidth: 0.5,
+      borderColor: '#d6d7da',
+      color : '#000'
+    },
+
   });
