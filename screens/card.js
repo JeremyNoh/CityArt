@@ -12,7 +12,7 @@ import {
   WebView,
   TextInput
 } from "react-native";
-import { Icon, Button } from "react-native-elements";
+import { Icon, Button, ButtonGroup } from "react-native-elements";
 
 import HomeScreen from "../screens/home";
 import SigninScreen from "../screens/signin";
@@ -33,7 +33,9 @@ import {
 class CardScreen extends React.Component {
   state = {
     locationloaded: false,
-    initialRegion: {}
+    initialRegion: {} ,
+    index: 1,
+    distance : 5000,
   };
 
   static navigationOptions = ({ navigation }) => {
@@ -46,6 +48,15 @@ class CardScreen extends React.Component {
       headerTitleStyle: {
         color: "#fff"
       },
+      headerLeft: (
+        <View style={{ flexDirection: "row", marginRight: 20 }}>
+          <Icon
+            name="exchange"
+            type="font-awesome"
+            onPress={() => state.params.SwitchView()}
+          />
+        </View>
+      ),
       headerRight: (
         <View style={{ flexDirection: "row", marginRight: 20 }}>
           <Icon
@@ -61,7 +72,8 @@ class CardScreen extends React.Component {
 
   componentDidMount() {
     this.props.navigation.setParams({
-      AddaTagg: this.AddaTagg
+      AddaTagg: this.AddaTagg,
+      SwitchView: this.SwitchView
     });
 
     navigator.geolocation.getCurrentPosition(
@@ -94,7 +106,7 @@ class CardScreen extends React.Component {
               longitude: this.state.initialRegion.longitude
             },
             { latitude: tag.latitude, longitude: tag.longitude },
-            5000
+            this.state.distance
           );
           if (tagIsIn) {
             DansMaRegion.push(tag);
@@ -120,6 +132,19 @@ class CardScreen extends React.Component {
         console.error(error);
       });
   }
+
+  SwitchView = () => {
+    this.setState({distance : 10000000})
+    // this.props.navigation.navigate("home");
+  };
+
+  updateIndex = (index) => {
+    if (index == 0) {
+        this.setState({index})
+      this.props.navigation.navigate("home");
+    }
+
+}
 
   AddaTagg = () => {
     Alert.alert(
@@ -191,6 +216,14 @@ class CardScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
+
+      <ButtonGroup
+       selectedBackgroundColor="pink"
+       onPress={this.updateIndex}
+       selectedIndex={this.state.index}
+       buttons={['Maps', 'Card']}
+       containerStyle={{height: 30}} />
+
         {this.isReady()}
         <PopupDialog
           dialogTitle={<DialogTitle title="Ajoute ton Tagg" />}

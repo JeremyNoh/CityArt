@@ -108,7 +108,6 @@ class SignupScreen extends React.Component {
         this.state.confirmPassword == ""
       )
     ) {
-      console.log("Vous etes inscrit ");
       this.AddUser();
     } else {
       Alert.alert(
@@ -121,7 +120,6 @@ class SignupScreen extends React.Component {
   };
 
   AddUser = () => {
-    console.log("DO a POST");
     fetch("https://cityart.herokuapp.com/api/auth/register", {
       method: "POST",
       headers: {
@@ -146,8 +144,7 @@ class SignupScreen extends React.Component {
           "Vous pouvez vous connecter"
         )
       );
-
-    // this.props.navigation.navigate("home" )
+    this.props.navigation.navigate("login" )
   };
 
   render() {

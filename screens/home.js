@@ -12,7 +12,7 @@ import {
   WebView,
   TextInput
 } from "react-native";
-import { Icon, Button } from "react-native-elements";
+import { Icon, Button , ButtonGroup} from "react-native-elements";
 import MapView from "react-native-maps";
 
 import PopupDialog, { DialogTitle } from "react-native-popup-dialog";
@@ -34,7 +34,9 @@ class HomeScreen extends React.Component {
   state = {
     locationloaded: false,
     initialRegion: {},
-    user_id: 1
+    user_id: 1,
+    onRegionChange: {},
+    index: 0
   };
 
   static navigationOptions = ({ navigation }) => {
@@ -47,6 +49,15 @@ class HomeScreen extends React.Component {
       headerTitleStyle: {
         color: "#fff"
       },
+      headerLeft: (
+        <View style={{ flexDirection: "row", marginRight: 20 }}>
+          <Icon
+            name="exchange"
+            type="font-awesome"
+            onPress={() => state.params.SwitchView()}
+          />
+        </View>
+      ),
       headerRight: (
         <View style={{ flexDirection: "row", marginRight: 20 }}>
           <Icon
@@ -58,12 +69,12 @@ class HomeScreen extends React.Component {
       )
     };
   };
-
   // Fin navigationOptions
 
   componentDidMount() {
     this.props.navigation.setParams({
-      AddaTagg: this.AddaTagg
+      AddaTagg: this.AddaTagg,
+      SwitchView: this.SwitchView
     });
 
     navigator.geolocation.getCurrentPosition(
@@ -111,6 +122,20 @@ class HomeScreen extends React.Component {
       { cancelable: false }
     );
   };
+
+  SwitchView = () => {
+    this.props.navigation.navigate("card");
+  };
+
+  updateIndex = (index) => {
+    if (index == 1) {
+      // this.setState({index})
+
+      this.props.navigation.navigate("card");
+
+    }
+
+}
 
   AddTaggPOST = () => {
     fetch("https://cityart.herokuapp.com/api/tags/add_tag", {
@@ -169,8 +194,12 @@ class HomeScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>Latitude: {this.state.initialRegion.latitude}</Text>
-        <Text>Longitude: {this.state.initialRegion.longitude}</Text>
+      <ButtonGroup
+       selectedBackgroundColor="pink"
+       onPress={this.updateIndex}
+       selectedIndex={this.state.index}
+       buttons={['Maps', 'Card']}
+       containerStyle={{height: 30}} />
         <PopupDialog
           dialogTitle={<DialogTitle title="Ajoute ton Tagg" />}
           ref={popupDialog => {
@@ -210,7 +239,7 @@ const styles = StyleSheet.create({
   mapStyle: {
     left: 0,
     right: 0,
-    top: 0,
+    top: 37,
     bottom: 0,
     position: "absolute"
   },
