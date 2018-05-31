@@ -36,13 +36,10 @@ class CardScreen extends React.Component {
     initialRegion: {}
   };
 
-  //  37.785834
-  //  0.5 * (screenWidth / screenHeight)
-  // Debut navigationOptions
   static navigationOptions = ({ navigation }) => {
     const { state, setParams, navigate } = navigation;
     return {
-      headerTitle: "App-Art",
+      headerTitle: "City Art",
       headerStyle: {
         backgroundColor: "#5C63D8"
       },

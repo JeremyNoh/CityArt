@@ -40,7 +40,7 @@ class HomeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const { state, setParams, navigate } = navigation;
     return {
-      headerTitle: "App-Art",
+      headerTitle: "City Art",
       headerStyle: {
         backgroundColor: "#5C63D8"
       },

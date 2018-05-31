@@ -17,8 +17,6 @@ import { Icon, Button } from "react-native-elements";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
-import RNShakeEvent from "react-native-shake-event";
-// import geolib from 'geolib';
 
 // 37,785834
 // -122,406417
@@ -31,13 +29,10 @@ class SigninScreen extends React.Component {
     password: null
   };
 
-  //  37.785834
-  //  0.5 * (screenWidth / screenHeight)
-  // Debut navigationOptions
   static navigationOptions = ({ navigation }) => {
     const { state, setParams, navigate } = navigation;
     return {
-      headerTitle: "App-Art",
+      headerTitle: "City Art",
       headerStyle: {
         backgroundColor: "#5C63D8"
       },
@@ -63,15 +58,9 @@ class SigninScreen extends React.Component {
     this.props.navigation.navigate("signup");
   };
 
-  componentWillMount() {
-    RNShakeEvent.addEventListener("shake", () => {
-      console.log("Device shake!");
-    });
-  }
-
   loginUser = () => {
     console.log("DO a POST");
-    fetch("https://cityart.herokuapp.com/api/auth/register", {
+    fetch("https://cityart.herokuapp.com/api/auth/login", {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -87,8 +76,7 @@ class SigninScreen extends React.Component {
         console.error("c'est une erreur !!!", error);
       })
       .then(res => {
-        console.log("email : ", this.state.email);
-        console.log("password : ", this.state.password);
+        console.log(res);
         this.props.navigation.navigate("home");
       });
   };
