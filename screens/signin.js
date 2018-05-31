@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Alert,
   Platform,
@@ -10,78 +10,106 @@ import {
   TouchableOpacity,
   ScrollView,
   WebView,
-  TextInput,
+  TextInput
+} from "react-native";
 
-} from 'react-native';
+import { Icon, Button } from "react-native-elements";
 
-
-import { Icon , Button } from 'react-native-elements'
-
-const screenWidth = Dimensions.get('window').width;
-const screenHeight = Dimensions.get('window').height;
+const screenWidth = Dimensions.get("window").width;
+const screenHeight = Dimensions.get("window").height;
+import RNShakeEvent from "react-native-shake-event";
+// import geolib from 'geolib';
 
 // 37,785834
 // -122,406417
 
-
-
 class SigninScreen extends React.Component {
-state = {
-  login :'',
-  signUpActive : false
-}
+  state = {
+    login: "",
+    signUpActive: false,
+    email: null,
+    password: null
+  };
 
   //  37.785834
   //  0.5 * (screenWidth / screenHeight)
   // Debut navigationOptions
-  static navigationOptions = ({navigation}) => {
+  static navigationOptions = ({ navigation }) => {
     const { state, setParams, navigate } = navigation;
     return {
-      headerTitle: 'App-Art',
+      headerTitle: "App-Art",
       headerStyle: {
-        backgroundColor: '#5C63D8'
+        backgroundColor: "#5C63D8"
       },
       headerTitleStyle: {
-        color: '#fff'
-      },
-    }
-  }
+        color: "#fff"
+      }
+    };
+  };
   // Fin navigationOptions
 
-  componentDidMount(){
-
+  componentDidMount() {
     this.props.navigation.setParams({
-      login : this.login,
-      SignUp : this.SignUp
-
-    })
+      login: this.login,
+      SignUp: this.SignUp
+    });
   }
 
   login = () => {
-    
-    this.props.navigation.navigate("home" )
-  }
+    this.props.navigation.navigate("home");
+  };
 
   SignUp = () => {
-    this.props.navigation.navigate("signup" )
+    this.props.navigation.navigate("signup");
+  };
+
+  componentWillMount() {
+    RNShakeEvent.addEventListener("shake", () => {
+      console.log("Device shake!");
+    });
   }
 
+  loginUser = () => {
+    console.log("DO a POST");
+    fetch("https://cityart.herokuapp.com/api/auth/register", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+        // 'Authorization' : `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        email: this.state.email,
+        password: this.state.password
+      })
+    })
+      .catch(error => {
+        console.error("c'est une erreur !!!", error);
+      })
+      .then(res => {
+        console.log("email : ", this.state.email);
+        console.log("password : ", this.state.password);
+        this.props.navigation.navigate("home");
+      });
+  };
 
-    render() {
-      return (
-        <View style={styles.container}>
+  render() {
+    return (
+      <View style={styles.container}>
         <Text style={styles.header}> ~ Login ~ </Text>
         <TextInput
-                style={styles.TextInputCSS}
-                /*value={this.state.login}*/
-                placeholder="username or email"
-              />
+          style={styles.TextInputCSS}
+          value={this.state.email}
+          onChangeText={email => this.setState({ email })}
+          placeholder=" email"
+        />
         <TextInput
-                style={styles.TextInputCSS}
-                /*value={this.state.login}*/
-                placeholder="Password"
-                type ='password'
-              />
+          style={styles.TextInputCSS}
+          value={this.state.password}
+          onChangeText={password => this.setState({ password })}
+          placeholder="Password"
+          type="password"
+        />
 
         <Button
           title="Login"
@@ -89,14 +117,13 @@ state = {
           buttonStyle={{
             backgroundColor: "#5C63D8",
             width: 300,
-            marginTop : 10,
+            marginTop: 10,
             height: 45,
             borderWidth: 0,
             borderRadius: 5
           }}
           containerStyle={{ marginTop: 20 }}
-          onPress={this.login}
-
+          onPress={this.loginUser}
         />
 
         <Button
@@ -105,57 +132,51 @@ state = {
           buttonStyle={{
             backgroundColor: "#adb1eb",
             width: 300,
-            marginTop : 10,
+            marginTop: 10,
             height: 45,
             borderWidth: 0,
-            borderRadius: 5,
+            borderRadius: 5
           }}
           containerStyle={{ marginTop: 20 }}
           onPress={this.SignUp}
-
         />
-        </View>
-        )
-    }
-
+      </View>
+    );
   }
+}
 
+export default SigninScreen;
 
-
-  export default SigninScreen
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: 20,
-    },
-    header: {
-      alignItems: 'center',
-      fontSize: 35,
-      fontWeight : 'bold',
-      color: "#000",
-
-
-    },
-    TextInputCSS: {
-      alignSelf : "stretch",
-      backgroundColor: "#f2f2f2",
-      height : 40,
-      marginVertical : 10 ,
-      borderRadius: 4,
-      borderWidth: 0.5,
-      borderColor: '#d6d7da',
-      color : '#000'
-    },
-    Confirm: {
-      alignItems: 'center',
-      alignSelf : "stretch",
-      backgroundColor: "#fff",
-      height : 40,
-      marginVertical : 10 ,
-      opacity : 1,
-    },
-  });
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20
+  },
+  header: {
+    alignItems: "center",
+    fontSize: 35,
+    fontWeight: "bold",
+    color: "#000"
+  },
+  TextInputCSS: {
+    alignSelf: "stretch",
+    backgroundColor: "#f2f2f2",
+    height: 40,
+    marginVertical: 10,
+    borderRadius: 4,
+    borderWidth: 0.5,
+    borderColor: "#d6d7da",
+    color: "#000"
+  },
+  Confirm: {
+    alignItems: "center",
+    alignSelf: "stretch",
+    backgroundColor: "#fff",
+    height: 40,
+    marginVertical: 10,
+    opacity: 1
+  }
+});
