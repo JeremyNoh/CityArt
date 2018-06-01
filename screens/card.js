@@ -10,7 +10,8 @@ import {
   TouchableOpacity,
   ScrollView,
   WebView,
-  TextInput
+  TextInput,
+  AsyncStorage
 } from "react-native";
 import { Icon, Button, ButtonGroup } from "react-native-elements";
 
@@ -43,20 +44,11 @@ class CardScreen extends React.Component {
     return {
       headerTitle: "City Art",
       headerStyle: {
-        backgroundColor: "#5C63D8"
+        backgroundColor: "#8FE2D9"
       },
       headerTitleStyle: {
         color: "#fff"
       },
-      headerLeft: (
-        <View style={{ flexDirection: "row", marginRight: 20 }}>
-          <Icon
-            name="exchange"
-            type="font-awesome"
-            onPress={() => state.params.SwitchView()}
-          />
-        </View>
-      ),
       headerRight: (
         <View style={{ flexDirection: "row", marginRight: 20 }}>
           <Icon
@@ -69,6 +61,22 @@ class CardScreen extends React.Component {
     };
   };
   // Fin navigationOptions
+
+
+      async componentWillMount(){
+        console.log("componentWillMount")
+        try {
+          const result = await AsyncStorage.getItem('@User')
+          if (result) {
+            user  = JSON.parse(result) ;
+            console.log(user);
+            this.setState({ id : user.id , token : user.token });
+
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      }
 
   componentDidMount() {
     this.props.navigation.setParams({
@@ -146,24 +154,48 @@ class CardScreen extends React.Component {
 
 }
 
-  AddaTagg = () => {
-    Alert.alert(
-      "Ajouter un Tagg",
-      "Etes vous sur de vouloir Ajouter un tag",
-      [
-        { text: "Cancel", valuer: true },
+AddaTagg = () => {
+  Alert.alert(
+    "Ajouter un Tagg",
+    "Etes vous sur de vouloir Ajouter un tag",
+    [
+      { text: "Cancel", valuer: true },
 
-        {
-          text: "OK",
-          onPress: () => {
-            console.log("ajout d'un Tagg");
+      {
+        text: "OK",
+        onPress: () => {
+          console.log("ajout d'un Tagg");
+          if(this.state.token){
             this.popupDialog.show();
+
+          }
+          else {
+            this.GoToRegister();
           }
         }
-      ],
-      { cancelable: false }
-    );
-  };
+      }
+    ],
+    { cancelable: false }
+  );
+};
+
+GoToRegister = () => {
+  Alert.alert(
+    "Veuillez vous Connecter",
+    "pour ajouter un tag il faut etre membre",
+    [
+      { text: "Plus tard", valuer: true },
+
+      {
+        text: "Se connecter",
+        onPress: () => {
+          this.props.navigation.navigate("signin");
+        }
+      }
+    ],
+    { cancelable: false }
+  );
+};
 
   AddTaggPOST = () => {
     fetch("https://cityart.herokuapp.com/api/tags/add_tag", {
@@ -184,7 +216,7 @@ class CardScreen extends React.Component {
         console.error("c'est une erreur !!!", error);
       })
       .then(res =>
-        Alert.alert("Tagg Ajouter ", "Parfait !! le tagg est ajouter")
+        Alert.alert("Tag Ajouter ", "Parfait !! le tag est ajouté")
       );
 
     this.popupDialog.dismiss();
@@ -263,7 +295,7 @@ const styles = StyleSheet.create({
     position: "absolute"
   },
   addTaggCSS: {
-    backgroundColor: "#5C63D8",
+    backgroundColor: "#8FE2D9",
     width: 300,
     marginTop: 30,
     height: 45,

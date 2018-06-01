@@ -10,7 +10,8 @@ import {
   TouchableOpacity,
   ScrollView,
   WebView,
-  TextInput
+  TextInput,
+  AsyncStorage
 } from "react-native";
 
 import { Icon, Button } from "react-native-elements";
@@ -32,9 +33,9 @@ class SigninScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const { state, setParams, navigate } = navigation;
     return {
-      headerTitle: "City Art",
+      headerTitle: "Login",
       headerStyle: {
-        backgroundColor: "#5C63D8"
+        backgroundColor: "#8FE2D9"
       },
       headerTitleStyle: {
         color: "#fff"
@@ -43,11 +44,30 @@ class SigninScreen extends React.Component {
   };
   // Fin navigationOptions
 
-  componentDidMount() {
+
+  async componentWillMount(){
+    console.log("componentWillMount")
+    try {
+      const result = await AsyncStorage.getItem('@User')
+      if (result) {
+        user  = JSON.parse(result) ;
+        console.log(user);
+        this.props.navigation.navigate("home");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+   componentDidMount() {
     this.props.navigation.setParams({
       login: this.login,
       SignUp: this.SignUp
     });
+
+
+
+
   }
 
   login = () => {
@@ -58,27 +78,49 @@ class SigninScreen extends React.Component {
     this.props.navigation.navigate("signup");
   };
 
+
   loginUser = () => {
-    console.log("DO a POST");
-    fetch("https://cityart.herokuapp.com/api/auth/login", {
-      method: "POST",
+    fetch('https://cityart.herokuapp.com/api/auth/login', {
+      method: 'POST',
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-        // 'Authorization' : `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        email: this.state.email,
-        password: this.state.password
-      })
+            email: this.state.email,
+            password: this.state.password
+      }),
+    }).then((response) => response.json())
+        .then((responseJson) => {
+            console.log(responseJson)
+            if (responseJson.err) {
+              Alert.alert("Connection error", `${responseJson.err}`);
+              // this.errorE()
+              // console.log(`${responseJson.err}`);
+            }
+
+            else if (responseJson.data) {
+
+              const user = {
+                  'id':responseJson.data.user.id,
+                  'token':responseJson.token
+              }
+              const str = JSON.stringify(user)
+              AsyncStorage.setItem('@User', str).then(() => {
+                this.props.navigation.navigate("home");
+
+              })
+
+            }
+
+        })
+        .catch((error) => {
+          console.error(error);
+          Alert.alert(
+            "Error connection ",
+              `${error}`
+          )
     })
-      .catch(error => {
-        console.error("c'est une erreur !!!", error);
-      })
-      .then(res => {
-        console.log(res);
-        this.props.navigation.navigate("home");
-      });
   };
 
   render() {
@@ -103,7 +145,7 @@ class SigninScreen extends React.Component {
           title="Login"
           titleStyle={{ fontWeight: "700" }}
           buttonStyle={{
-            backgroundColor: "#5C63D8",
+            backgroundColor: "#8FE2D9",
             width: 300,
             marginTop: 10,
             height: 45,
@@ -118,7 +160,7 @@ class SigninScreen extends React.Component {
           title="SignUp"
           titleStyle={{ fontWeight: "700" }}
           buttonStyle={{
-            backgroundColor: "#adb1eb",
+            backgroundColor: "#8FE2D9",
             width: 300,
             marginTop: 10,
             height: 45,
@@ -127,6 +169,20 @@ class SigninScreen extends React.Component {
           }}
           containerStyle={{ marginTop: 20 }}
           onPress={this.SignUp}
+        />
+
+        <Button
+          title="Continuer sans se connecter"
+          titleStyle={{ fontWeight: "700" }}
+          buttonStyle={{
+            width: 300,
+            marginTop: 10,
+            height: 45,
+            borderWidth: 0,
+            borderRadius: 5
+          }}
+          containerStyle={{ marginTop: 20 }}
+          onPress={this.login}
         />
       </View>
     );

@@ -37,9 +37,9 @@ class SignupScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const { state, setParams, navigate } = navigation;
     return {
-      headerTitle: "CityArt",
+      headerTitle: "SignUp",
       headerStyle: {
-        backgroundColor: "#5C63D8"
+        backgroundColor: "#8FE2D9"
       },
       headerTitleStyle: {
         color: "#fff"
@@ -140,11 +140,11 @@ class SignupScreen extends React.Component {
       .then(res =>
         // console.log("good ",res.json())
         Alert.alert(
-          "Vous etes Bien Enregistrer  ",
+          "Vous êtes bien enregistrer  ",
           "Vous pouvez vous connecter"
         )
       );
-    this.props.navigation.navigate("login" )
+    this.props.navigation.navigate("login")
   };
 
   render() {
@@ -200,7 +200,7 @@ class SignupScreen extends React.Component {
           title="S'inscrire "
           titleStyle={{ fontWeight: "700" }}
           buttonStyle={{
-            backgroundColor: "#5C63D8",
+            backgroundColor: "#8FE2D9",
             width: 300,
             marginTop: 10,
             height: 45,

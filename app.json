@@ -2,7 +2,7 @@
   "expo": {
     "sdkVersion": "27.0.0",
     "splash": {
-     "image": "./assets/splash.gif",
+     "image": "./assets/logo.png",
      "resizeMode": "contain",
      "backgroundColor": "#ffffff"
    },
