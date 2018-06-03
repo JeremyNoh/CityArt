@@ -157,8 +157,6 @@ class HomeScreen extends React.Component {
 
   // Ajoute un tag
   AddTaggPOST = () => {
-    console.log("voici le token on est al");
-    console.log(this.state.token);
     fetch("https://cityart.herokuapp.com/api/tags/add_tag", {
       method: "POST",
       headers: {
