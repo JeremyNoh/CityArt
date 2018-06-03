@@ -19,9 +19,6 @@ import { Icon, Button } from "react-native-elements";
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
-// 37,785834
-// -122,406417
-
 class SigninScreen extends React.Component {
   state = {
     login: "",
@@ -44,13 +41,12 @@ class SigninScreen extends React.Component {
   };
   // Fin navigationOptions
 
-
-  async componentWillMount(){
-    console.log("componentWillMount")
+  async componentWillMount() {
+    console.log("componentWillMount");
     try {
-      const result = await AsyncStorage.getItem('@User')
+      const result = await AsyncStorage.getItem("@User");
       if (result) {
-        user  = JSON.parse(result) ;
+        user = JSON.parse(result);
         console.log(user);
         this.props.navigation.navigate("home");
       }
@@ -59,15 +55,11 @@ class SigninScreen extends React.Component {
     }
   }
 
-   componentDidMount() {
+  componentDidMount() {
     this.props.navigation.setParams({
       login: this.login,
       SignUp: this.SignUp
     });
-
-
-
-
   }
 
   login = () => {
@@ -78,49 +70,45 @@ class SigninScreen extends React.Component {
     this.props.navigation.navigate("signup");
   };
 
-
   loginUser = () => {
-    fetch('https://cityart.herokuapp.com/api/auth/login', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-            email: this.state.email,
-            password: this.state.password
-      }),
-    }).then((response) => response.json())
-        .then((responseJson) => {
-            console.log(responseJson)
-            if (responseJson.err) {
-              Alert.alert("Connection error", `${responseJson.err}`);
-              // this.errorE()
-              // console.log(`${responseJson.err}`);
-            }
-
-            else if (responseJson.data) {
-
-              const user = {
-                  'id':responseJson.data.user.id,
-                  'token':responseJson.token
-              }
-              const str = JSON.stringify(user)
-              AsyncStorage.setItem('@User', str).then(() => {
-                this.props.navigation.navigate("home");
-
-              })
-
-            }
-
+    if (!(this.state.email == null) && !(this.state.password == null)) {
+      fetch("https://cityart.herokuapp.com/api/auth/login", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: this.state.email,
+          password: this.state.password
         })
-        .catch((error) => {
+      })
+        .then(response => response.json())
+        .then(responseJson => {
+          console.log(responseJson);
+          if (responseJson.err) {
+            Alert.alert("Connection error", `${responseJson.err}`);
+            // this.errorE()
+            // console.log(`${responseJson.err}`);
+          } else if (responseJson.data) {
+            const user = {
+              id: responseJson.data.user.id,
+              token: responseJson.token
+            };
+            const str = JSON.stringify(user);
+            AsyncStorage.setItem("@User", str).then(() => {
+              this.props.navigation.navigate("home");
+            });
+          }
+        })
+        .catch(error => {
           console.error(error);
-          Alert.alert(
-            "Error connection ",
-              `${error}`
-          )
-    })
+          Alert.alert("Error connection ", `${error}`);
+        });
+    } else {
+      Alert.alert("Error connection ", "Veuillez remplir tout les champs");
+      this.setState({ email: null, password: null });
+    }
   };
 
   render() {
@@ -144,14 +132,7 @@ class SigninScreen extends React.Component {
         <Button
           title="Login"
           titleStyle={{ fontWeight: "700" }}
-          buttonStyle={{
-            backgroundColor: "#8FE2D9",
-            width: 300,
-            marginTop: 10,
-            height: 45,
-            borderWidth: 0,
-            borderRadius: 5
-          }}
+          buttonStyle={styles.buttonStyle}
           containerStyle={{ marginTop: 20 }}
           onPress={this.loginUser}
         />
@@ -159,14 +140,7 @@ class SigninScreen extends React.Component {
         <Button
           title="SignUp"
           titleStyle={{ fontWeight: "700" }}
-          buttonStyle={{
-            backgroundColor: "#8FE2D9",
-            width: 300,
-            marginTop: 10,
-            height: 45,
-            borderWidth: 0,
-            borderRadius: 5
-          }}
+          buttonStyle={styles.buttonStyle}
           containerStyle={{ marginTop: 20 }}
           onPress={this.SignUp}
         />
@@ -222,5 +196,13 @@ const styles = StyleSheet.create({
     height: 40,
     marginVertical: 10,
     opacity: 1
+  },
+  buttonStyle: {
+    backgroundColor: "#8FE2D9",
+    width: 300,
+    marginTop: 10,
+    height: 45,
+    borderWidth: 0,
+    borderRadius: 5
   }
 });

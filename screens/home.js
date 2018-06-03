@@ -13,7 +13,7 @@ import {
   TextInput,
   AsyncStorage
 } from "react-native";
-import { Icon, Button , ButtonGroup} from "react-native-elements";
+import { Icon, Button, ButtonGroup } from "react-native-elements";
 import MapView from "react-native-maps";
 
 import PopupDialog, { DialogTitle } from "react-native-popup-dialog";
@@ -24,12 +24,6 @@ const screenHeight = Dimensions.get("window").height;
 
 import SigninScreen from "../screens/signin";
 import CardScreen from "../screens/card";
-
-// Latitude maison  : 48.840083
-// Longitude maison : 2.671493
-
-// Latitude taff  : 48,788747
-// Longitude taff : 2,36377
 
 class HomeScreen extends React.Component {
   state = {
@@ -64,26 +58,24 @@ class HomeScreen extends React.Component {
   };
   // Fin navigationOptions
 
-
-    async componentWillMount(){
-      console.log("componentWillMount")
-      try {
-        const result = await AsyncStorage.getItem('@User')
-        if (result) {
-          user  = JSON.parse(result) ;
-          console.log(user);
-          this.setState({ id : user.id , token : user.token });
-
-        }
-      } catch (e) {
-        console.log(e);
+  // stoke le token & l'id dans un state
+  async componentWillMount() {
+    console.log("componentWillMount");
+    try {
+      const result = await AsyncStorage.getItem("@User");
+      if (result) {
+        user = JSON.parse(result);
+        console.log(user);
+        this.setState({ id: user.id, token: user.token });
       }
+    } catch (e) {
+      console.log(e);
     }
+  }
 
   componentDidMount() {
     this.props.navigation.setParams({
-      AddaTagg: this.AddaTagg,
-      SwitchView: this.SwitchView
+      AddaTagg: this.AddaTagg
     });
 
     navigator.geolocation.getCurrentPosition(
@@ -113,6 +105,7 @@ class HomeScreen extends React.Component {
     // fin get marker
   }
 
+  //  Ajout Dun tags si il a un token soit connecter il peux sinon il doit se register
   AddaTagg = () => {
     Alert.alert(
       "Ajouter un Tagg",
@@ -124,11 +117,9 @@ class HomeScreen extends React.Component {
           text: "OK",
           onPress: () => {
             console.log("ajout d'un Tagg");
-            if(this.state.token){
+            if (this.state.token) {
               this.popupDialog.show();
-
-            }
-            else {
+            } else {
               this.GoToRegister();
             }
           }
@@ -138,6 +129,7 @@ class HomeScreen extends React.Component {
     );
   };
 
+  // Aller s'authentifié
   GoToRegister = () => {
     Alert.alert(
       "Veuillez vous Connecter",
@@ -156,47 +148,41 @@ class HomeScreen extends React.Component {
     );
   };
 
-
-  SwitchView = () => {
-    this.props.navigation.navigate("card");
-  };
-
-  updateIndex = (index) => {
+  updateIndex = index => {
     if (index == 1) {
       // this.setState({index})
-
       this.props.navigation.navigate("card");
-
     }
+  };
 
-}
-
+  // Ajoute un tag
   AddTaggPOST = () => {
+    console.log("voici le token on est al");
+    console.log(this.state.token);
     fetch("https://cityart.herokuapp.com/api/tags/add_tag", {
       method: "POST",
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json"
-        // 'Authorization' : `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.state.token}`
       },
       body: JSON.stringify({
         message: this.state.message,
         longitude: this.state.initialRegion.longitude,
         latitude: this.state.initialRegion.latitude,
-        user_id: this.state.user_id
+        user_id: this.state.id
       })
     })
       .catch(error => {
         console.error("c'est une erreur !!!", error);
       })
-      .then(res =>
-        Alert.alert("Tag Ajouter ", "Parfait !! le tag est ajouté")
-      );
+      .then(res => Alert.alert("Tag Ajouter ", "Parfait !! le tag est ajouté"));
 
     this.popupDialog.dismiss();
     this.setState({ message: " " });
   };
 
+  // charge les markeurs
   LoadingMapp() {
     const list = this.state.dataLocation.tags.map((marker, index) => {
       return (
@@ -228,12 +214,13 @@ class HomeScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-      <ButtonGroup
-       selectedBackgroundColor="pink"
-       onPress={this.updateIndex}
-       selectedIndex={this.state.index}
-       buttons={['Maps', 'Card']}
-       containerStyle={{height: 30}} />
+        <ButtonGroup
+          selectedBackgroundColor="pink"
+          onPress={this.updateIndex}
+          selectedIndex={this.state.index}
+          buttons={["Maps", "Card"]}
+          containerStyle={{ height: 30 }}
+        />
         <PopupDialog
           dialogTitle={<DialogTitle title="Ajoute ton Tagg" />}
           ref={popupDialog => {
@@ -262,6 +249,10 @@ class HomeScreen extends React.Component {
     );
   }
 }
+
+// avec du temps et en terme de bonne Pratique j'aurai du exporter certainnes methodes que j'utilise
+// dans la classe Home & card pour m'eviter le boublon ...
+//  #autoCritique :D
 
 export default HomeScreen;
 const styles = StyleSheet.create({
@@ -297,7 +288,7 @@ const styles = StyleSheet.create({
     color: "#000"
   },
   imageForButtonInfo: {
-  width: 40,
-  height: 40
-  },
+    width: 40,
+    height: 40
+  }
 });

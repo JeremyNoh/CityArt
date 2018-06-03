@@ -18,9 +18,6 @@ import { Icon, Button } from "react-native-elements";
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
-// 37,785834
-// -122,406417
-
 class SignupScreen extends React.Component {
   state = {
     username: null,
@@ -54,6 +51,7 @@ class SignupScreen extends React.Component {
     });
   }
 
+  // Gestion D'erreur
   testChampsRempli = () => {
     if (this.state.username == null || this.state.username == "") {
       this.setState({ usernameError: false });
@@ -80,6 +78,7 @@ class SignupScreen extends React.Component {
     }
   };
 
+  // teste de l'email
   emailTest = () => {
     mailformat = /^(([^<>()\[\]\\.,;:\s@“]+(\.[^<>()\[\]\\.,;:\s@“]+)*)|(“.+“))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!this.state.email.match(mailformat)) {
@@ -125,7 +124,6 @@ class SignupScreen extends React.Component {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json"
-        // 'Authorization' : `Bearer ${token}`,
       },
       body: JSON.stringify({
         username: this.state.username,
@@ -138,13 +136,12 @@ class SignupScreen extends React.Component {
         console.error("c'est une erreur !!!", error);
       })
       .then(res =>
-        // console.log("good ",res.json())
         Alert.alert(
           "Vous êtes bien enregistrer  ",
           "Vous pouvez vous connecter"
         )
       );
-    this.props.navigation.navigate("login")
+    this.props.navigation.navigate("login");
   };
 
   render() {

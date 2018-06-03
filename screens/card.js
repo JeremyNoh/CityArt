@@ -28,15 +28,12 @@ import {
   CardImage
 } from "react-native-cards";
 
-// 37,785834
-// -122,406417
-
 class CardScreen extends React.Component {
   state = {
     locationloaded: false,
-    initialRegion: {} ,
+    initialRegion: {},
     index: 1,
-    distance : 5000,
+    distance: 5000
   };
 
   static navigationOptions = ({ navigation }) => {
@@ -62,26 +59,22 @@ class CardScreen extends React.Component {
   };
   // Fin navigationOptions
 
-
-      async componentWillMount(){
-        console.log("componentWillMount")
-        try {
-          const result = await AsyncStorage.getItem('@User')
-          if (result) {
-            user  = JSON.parse(result) ;
-            console.log(user);
-            this.setState({ id : user.id , token : user.token });
-
-          }
-        } catch (e) {
-          console.log(e);
-        }
+  async componentWillMount() {
+    try {
+      const result = await AsyncStorage.getItem("@User");
+      if (result) {
+        user = JSON.parse(result);
+        console.log(user);
+        this.setState({ id: user.id, token: user.token });
       }
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   componentDidMount() {
     this.props.navigation.setParams({
-      AddaTagg: this.AddaTagg,
-      SwitchView: this.SwitchView
+      AddaTagg: this.AddaTagg
     });
 
     navigator.geolocation.getCurrentPosition(
@@ -104,8 +97,7 @@ class CardScreen extends React.Component {
       .then(response => response.json())
       .then(responseJson => {
         this.setState({ dataLocation: responseJson, locationloaded: true });
-        // test
-
+        // Recupere les tags de 5km et les tri dans un tableau
         let DansMaRegion = [];
         for (let tag of responseJson.tags) {
           let tagIsIn = geolib.isPointInCircle(
@@ -141,83 +133,77 @@ class CardScreen extends React.Component {
       });
   }
 
-  SwitchView = () => {
-    this.setState({distance : 10000000})
-    // this.props.navigation.navigate("home");
-  };
-
-  updateIndex = (index) => {
+  // changement de vu grace au ButtonGroup :) et oui j'innove :P
+  updateIndex = index => {
     if (index == 0) {
-        this.setState({index})
+      this.setState({ index });
       this.props.navigation.navigate("home");
     }
+  };
 
-}
+  //  Ajout Dun tags si il a un token soit connecter il peux sinon il doit se register
+  AddaTagg = () => {
+    Alert.alert(
+      "Ajouter un Tagg",
+      "Etes vous sur de vouloir Ajouter un tag",
+      [
+        { text: "Cancel", valuer: true },
 
-AddaTagg = () => {
-  Alert.alert(
-    "Ajouter un Tagg",
-    "Etes vous sur de vouloir Ajouter un tag",
-    [
-      { text: "Cancel", valuer: true },
-
-      {
-        text: "OK",
-        onPress: () => {
-          console.log("ajout d'un Tagg");
-          if(this.state.token){
-            this.popupDialog.show();
-
-          }
-          else {
-            this.GoToRegister();
+        {
+          text: "OK",
+          onPress: () => {
+            console.log("ajout d'un Tagg");
+            if (this.state.token) {
+              this.popupDialog.show();
+            } else {
+              this.GoToRegister();
+            }
           }
         }
-      }
-    ],
-    { cancelable: false }
-  );
-};
+      ],
+      { cancelable: false }
+    );
+  };
 
-GoToRegister = () => {
-  Alert.alert(
-    "Veuillez vous Connecter",
-    "pour ajouter un tag il faut etre membre",
-    [
-      { text: "Plus tard", valuer: true },
+  // Aller s'authentifié
+  GoToRegister = () => {
+    Alert.alert(
+      "Veuillez vous Connecter",
+      "pour ajouter un tag il faut etre membre",
+      [
+        { text: "Plus tard", valuer: true },
 
-      {
-        text: "Se connecter",
-        onPress: () => {
-          this.props.navigation.navigate("signin");
+        {
+          text: "Se connecter",
+          onPress: () => {
+            this.props.navigation.navigate("signin");
+          }
         }
-      }
-    ],
-    { cancelable: false }
-  );
-};
+      ],
+      { cancelable: false }
+    );
+  };
 
+  // Ajoute un tag
   AddTaggPOST = () => {
     fetch("https://cityart.herokuapp.com/api/tags/add_tag", {
       method: "POST",
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json"
-        // 'Authorization' : `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.state.token}`
       },
       body: JSON.stringify({
         message: this.state.message,
         longitude: this.state.initialRegion.longitude,
         latitude: this.state.initialRegion.latitude,
-        user_id: this.state.user_id
+        user_id: this.state.id
       })
     })
       .catch(error => {
         console.error("c'est une erreur !!!", error);
       })
-      .then(res =>
-        Alert.alert("Tag Ajouter ", "Parfait !! le tag est ajouté")
-      );
+      .then(res => Alert.alert("Tag Ajouter ", "Parfait !! le tag est ajouté"));
 
     this.popupDialog.dismiss();
     this.setState({ message: " " });
@@ -227,8 +213,8 @@ GoToRegister = () => {
     if (this.state.isReady) {
       return (
         <ScrollView>
-          {this.state.DansMaRegion.map(item => (
-            <Card>
+          {this.state.DansMaRegion.map((item, index) => (
+            <Card key={index}>
               <CardTitle subtitle={item.distance + " m"} />
               <CardContent text={item.message} />
               <CardAction separator={true} inColumn={false}>
@@ -248,13 +234,13 @@ GoToRegister = () => {
   render() {
     return (
       <View style={styles.container}>
-
-      <ButtonGroup
-       selectedBackgroundColor="pink"
-       onPress={this.updateIndex}
-       selectedIndex={this.state.index}
-       buttons={['Maps', 'Card']}
-       containerStyle={{height: 30}} />
+        <ButtonGroup
+          selectedBackgroundColor="pink"
+          onPress={this.updateIndex}
+          selectedIndex={this.state.index}
+          buttons={["Maps", "Card"]}
+          containerStyle={{ height: 30 }}
+        />
 
         {this.isReady()}
         <PopupDialog
@@ -284,6 +270,10 @@ GoToRegister = () => {
     );
   }
 }
+
+// avec du temps et en terme de bonne Pratique j'aurai du exporter certainnes methodes que j'utilise
+// dans la classe Home & card pour m'eviter le boublon ...
+//  #autoCritique :D 
 
 export default CardScreen;
 const styles = StyleSheet.create({
