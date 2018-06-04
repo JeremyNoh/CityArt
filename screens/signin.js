@@ -126,7 +126,7 @@ class SigninScreen extends React.Component {
           value={this.state.password}
           onChangeText={password => this.setState({ password })}
           placeholder="Password"
-          type="password"
+          secureTextEntry={true}
         />
 
         <Button
